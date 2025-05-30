@@ -1100,7 +1100,8 @@ newrefresh(struct context *ctx, int val)
 {
 	refreshing = false;
 	if (dflag)
-		fprintf(stderr, "refresh done\n");
+		fprintf(stderr, "refresh done. val: %d, context: %p\n", val, (void *)ctx);
+		//fprintf(stderr, "refresh done\n");
 }
 
 static const struct node lowcuttree[] = {
@@ -1317,6 +1318,12 @@ static const struct node roottree[] = {
 		{"ccmix", HARDWARE_CCMIX, .set=setenum, .new=newenum, .names=(const char *const[]){
 			"TotalMix App", "6ch + phones", "8ch", "20ch",
 		}, .nameslen=4},
+		{"interfacemode", HARDWARE_INTERFACEMODE, .set=setenum, .new=newenum, .names=(const char *const[]){
+			"Auto", "USB2", "USB3", "CC",
+		}, .nameslen=4},
+		{"ccrouting", HARDWARE_CCROUTING, .set=setenum, .new=newenum, .names=(const char *const[]){
+			"All Ch.", "Phones",
+		}, .nameslen=2},
 		{"standalonemidi", HARDWARE_STANDALONEMIDI, .set=setenum, .new=newenum, .names=(const char *const[]){
 			"Off", "MIDI 1", "MIDI 2", "MADI O", "MADI C",
 		}, .nameslen=5},
