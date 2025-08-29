@@ -1477,7 +1477,7 @@ static const struct node roottree[] = {
 		{NULL, DUREC_LENGTH, .new=newdureclength},
 		{0},
 	}},
-	{"register", -1, .set=setregs},
+	// {"register", -1, .set=setregs},	// generates stack overflow inside maptree() because node->ctl will be -1
 	{"refresh", REFRESH, .set=setrefresh},
 	{0},
 };

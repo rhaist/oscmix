@@ -9,64 +9,64 @@ static const char *const reflevel_input[] = {"-10dBV", "+4dBu", "Lo Gain"};
 static const char *const reflevel_output[] = {"-10dBV", "+4dBu", "Hi Gain"};
 
 static const struct channelinfo inputs[] = {
-	{"Mic 1",        INPUT_HAS_GAIN | INPUT_HAS_48V | INPUT_HAS_AUTOSET,
+	{"Mic 1/Line 1", INPUT_HAS_GAIN | INPUT_HAS_48V | INPUT_HAS_AUTOSET,
 			.gain = {0, 650},
 	},
-	{"Mic 2",        INPUT_HAS_GAIN | INPUT_HAS_48V | INPUT_HAS_AUTOSET,
+	{"Mic 2/Line 2", INPUT_HAS_GAIN | INPUT_HAS_48V | INPUT_HAS_AUTOSET,
 			.gain = {0, 650},
 	},
-	{"Inst/Line 3",       INPUT_HAS_GAIN | INPUT_HAS_REFLEVEL | INPUT_HAS_HIZ | INPUT_HAS_AUTOSET,
+	{"Inst/Line 3",  INPUT_HAS_GAIN | INPUT_HAS_REFLEVEL | INPUT_HAS_HIZ | INPUT_HAS_AUTOSET,
 			.gain = {0, 120},
 			.reflevel = {reflevel_input, LEN(reflevel_input)},
 	},
-	{"Inst/Line 4",       INPUT_HAS_GAIN | INPUT_HAS_REFLEVEL | INPUT_HAS_HIZ | INPUT_HAS_AUTOSET,
+	{"Inst/Line 4",  INPUT_HAS_GAIN | INPUT_HAS_REFLEVEL | INPUT_HAS_HIZ | INPUT_HAS_AUTOSET,
 			.gain = {0, 120},
 			.reflevel = {reflevel_input, LEN(reflevel_input)},
 	},
-	{"Analog 5",       INPUT_HAS_REFLEVEL,
+	{"Analog 5",     INPUT_HAS_REFLEVEL,
 			.reflevel = {reflevel_input, LEN(reflevel_input)},
 	},
-	{"Analog 6",       INPUT_HAS_REFLEVEL,
+	{"Analog 6",     INPUT_HAS_REFLEVEL,
 			.reflevel = {reflevel_input, LEN(reflevel_input)},
 	},
-	{"Analog 7",       INPUT_HAS_REFLEVEL,
+	{"Analog 7",     INPUT_HAS_REFLEVEL,
 			.reflevel = {reflevel_input, LEN(reflevel_input)},
 	},
-	{"Analog 8",       INPUT_HAS_REFLEVEL,
+	{"Analog 8",     INPUT_HAS_REFLEVEL,
 			.reflevel = {reflevel_input, LEN(reflevel_input)},
 	},
-	{"SPDIF 9",      0},
-	{"SPDIF 10",     0},
-	{"A/S 11",0},
-	{"A/S 12",0},
-	{"ADAT 13",      0},
-	{"ADAT 14",      0},
-	{"ADAT 15",      0},
-	{"ADAT 16",      0},
-	{"ADAT 17",      0},
-	{"ADAT 18",      0},
+	{"SPDIF L",      0},
+	{"SPDIF R",      0},
+	{"A/S 1",        0},
+	{"A/S 2",        0},
+	{"ADAT 3",       0},
+	{"ADAT 4",       0},
+	{"ADAT 5",       0},
+	{"ADAT 6",       0},
+	{"ADAT 7",       0},
+	{"ADAT 8",       0},
 };
 _Static_assert(LEN(inputs) == 18, "bad inputs");
 
 static const struct channelinfo outputs[] = {
-	{"Analog 1",       OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
-	{"Analog 2",       OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
-	{"Analog 3",       OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
-	{"Analog 4",       OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
-	{"Analog 5",       OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
-	{"Analog 6",       OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
+	{"Analog 1",     OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
+	{"Analog 2",     OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
+	{"Analog 3",     OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
+	{"Analog 4",     OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
+	{"Analog 5",     OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
+	{"Analog 6",     OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
 	{"Phones 7",     OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
 	{"Phones 8",     OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
-	{"SPDIF 9",      0},
-	{"SPDIF 10",     0},
-	{"A/S 11",0},
-	{"A/S 12",0},
-	{"ADAT 13",      0},
-	{"ADAT 14",      0},
-	{"ADAT 15",      0},
-	{"ADAT 16",      0},
-	{"ADAT 17",      0},
-	{"ADAT 18",      0},
+	{"SPDIF L",      0},
+	{"SPDIF R",      0},
+	{"AS 1",         0},
+	{"AS 2",         0},
+	{"ADAT 3",       0},
+	{"ADAT 4",       0},
+	{"ADAT 5",       0},
+	{"ADAT 6",       0},
+	{"ADAT 7",       0},
+	{"ADAT 8",       0},
 };
 _Static_assert(LEN(outputs) == 18, "bad outputs");
 
@@ -120,7 +120,8 @@ regtoctl(int reg, struct param *p)
 		case 0x0008:
 			return (flags & INPUT_HAS_48V) ? INPUT_48V :
 			(flags & INPUT_HAS_REFLEVEL) ? INPUT_REFLEVEL : -1;
-		case 0x0009: return INPUT_HIZ;
+		case 0x0009: 
+			return (flags & INPUT_HAS_HIZ) ? INPUT_HIZ : -1; 
 		case 0x000A: return INPUT_AUTOSET;
 
 		case 0x1200: return OUTPUT_VOLUME;
@@ -188,10 +189,13 @@ regtoctl(int reg, struct param *p)
 		case 0x3D40: return CLOCK_WCKTERM;
 		case 0x3D41: return HARDWARE_OPTICALOUT;
 		case 0x3D42: return HARDWARE_SPDIFOUT;
+
+		case 0x3F99: return REFRESH;
+
+		default:   	 return UNKNOWN;
 	}
 	return -1;
 }
-
 
 static int
 ctltoreg(enum control ctl, const struct param *p)
@@ -219,10 +223,10 @@ ctltoreg(enum control ctl, const struct param *p)
 			reg = 0x08; goto channel;
 		case INPUT_REFLEVEL:          if (~flags & INPUT_HAS_REFLEVEL) break;
 			reg = 0x08; goto channel;
-		case INPUT_AUTOSET:           if (~flags & INPUT_HAS_AUTOSET) break;
-			reg = 0x0A; goto channel;
 		case INPUT_HIZ:               if (~flags & INPUT_HAS_HIZ) break;
 			reg = 0x09; goto channel;
+		case INPUT_AUTOSET:           if (~flags & INPUT_HAS_AUTOSET) break;
+			reg = 0x0A; goto channel;
 
 		case OUTPUT_VOLUME:           reg = 0x00; goto channel;
 		case OUTPUT_PAN:              reg = 0x01; goto channel;
@@ -259,9 +263,14 @@ ctltoreg(enum control ctl, const struct param *p)
 		case AUTOLEVEL_MAXGAIN:       reg = 0x81; goto channel;
 		case AUTOLEVEL_HEADROOM:      reg = 0x82; goto channel;
 		case AUTOLEVEL_RISETIME:      reg = 0x83; goto channel;
-			// TODO implement MIX and MIX_LEVEL logic
+			// TODO implement MIX logic
 			//case MIX:
-			//case MIX_LEVEL:
+		case MIX_LEVEL:
+			if ((unsigned)p->out >= LEN(outputs)) break;
+			if ((unsigned)p->in >= LEN(inputs) + LEN(outputs)) break;
+			idx = p->in;
+			if (idx >= LEN(inputs)) idx += 0x20 - LEN(inputs);
+			return 0x4000 | p->out << 6 | idx;
 		case REVERB:                  return 0x3C00;
 		case REVERB_TYPE:             return 0x3C01;
 		case REVERB_PREDELAY:         return 0x3C02;
