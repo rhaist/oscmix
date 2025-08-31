@@ -21,6 +21,7 @@ implemented in oscmix.
 
 - RME Fireface UFX III
 - RME Fireface 802
+- RME Fireface UCX
 
 WebUI for WIP State preview is available at:
 https://huddx01.github.io/oscmix/

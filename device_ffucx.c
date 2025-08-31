@@ -9,64 +9,65 @@ static const char *const reflevel_input[] = {"-10dBV", "+4dBu", "Lo Gain"};
 static const char *const reflevel_output[] = {"-10dBV", "+4dBu", "Hi Gain"};
 
 static const struct channelinfo inputs[] = {
-	{"Mic 1",  INPUT_HAS_GAIN | INPUT_HAS_48V | INPUT_HAS_AUTOSET,
+
+	{"Mic 1", INPUT_HAS_GAIN | INPUT_HAS_48V | INPUT_HAS_AUTOSET,
 			.gain = {0, 650},
 	},
-	{"Mic 2",  INPUT_HAS_GAIN | INPUT_HAS_48V | INPUT_HAS_AUTOSET,
+	{"Mic 2", INPUT_HAS_GAIN | INPUT_HAS_48V | INPUT_HAS_AUTOSET,
 			.gain = {0, 650},
 	},
-	{"Inst/Line 3", INPUT_HAS_GAIN | INPUT_HAS_REFLEVEL | INPUT_HAS_HIZ | INPUT_HAS_AUTOSET,
+	{"AN 3",  INPUT_HAS_GAIN | INPUT_HAS_REFLEVEL | INPUT_HAS_HIZ | INPUT_HAS_AUTOSET,
 			.gain = {0, 120},
 			.reflevel = {reflevel_input, LEN(reflevel_input)},
 	},
-	{"Inst/Line 4", INPUT_HAS_GAIN | INPUT_HAS_REFLEVEL | INPUT_HAS_HIZ | INPUT_HAS_AUTOSET,
+	{"AN 4",  INPUT_HAS_GAIN | INPUT_HAS_REFLEVEL | INPUT_HAS_HIZ | INPUT_HAS_AUTOSET,
 			.gain = {0, 120},
 			.reflevel = {reflevel_input, LEN(reflevel_input)},
 	},
-	{"Analog 5", INPUT_HAS_REFLEVEL,
+	{"AN 5",     INPUT_HAS_REFLEVEL,
 			.reflevel = {reflevel_input, LEN(reflevel_input)},
 	},
-	{"Analog 6", INPUT_HAS_REFLEVEL,
+	{"AN 6",     INPUT_HAS_REFLEVEL,
 			.reflevel = {reflevel_input, LEN(reflevel_input)},
 	},
-	{"Analog 7", INPUT_HAS_REFLEVEL,
+	{"AN 7",     INPUT_HAS_REFLEVEL,
 			.reflevel = {reflevel_input, LEN(reflevel_input)},
 	},
-	{"Analog 8", INPUT_HAS_REFLEVEL,
+	{"AN 8",     INPUT_HAS_REFLEVEL,
 			.reflevel = {reflevel_input, LEN(reflevel_input)},
 	},
-	{"SPDIF 9",},
-	{"SPDIF 10",},
-	{"A/S 11"},
-	{"A/S 12"},
-	{"ADAT 13",},
-	{"ADAT 14",},
-	{"ADAT 15",},
-	{"ADAT 16",},
-	{"ADAT 17",},
-	{"ADAT 18",},
+	{"SPDIF L"},
+	{"SPDIF R"},
+	{"AS 1"},
+	{"AS 2"},
+	{"ADAT 3"},
+	{"ADAT 4"},
+	{"ADAT 5"},
+	{"ADAT 6"},
+	{"ADAT 7"},
+	{"ADAT 8"},
 };
 _Static_assert(LEN(inputs) == 18, "bad inputs");
 
 static const struct channelinfo outputs[] = {
-	{"Analog 1", OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
-	{"Analog 2", OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
-	{"Analog 3", OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
-	{"Analog 4", OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
-	{"Analog 5", OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
-	{"Analog 6", OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
-	{"Phones 7", OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
-	{"Phones 8", OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
-	{"SPDIF 9",},
-	{"SPDIF 10",},
-	{"A/S 11"},
-	{"A/S 12"},
-	{"ADAT 13",},
-	{"ADAT 14",},
-	{"ADAT 15",},
-	{"ADAT 16",},
-	{"ADAT 17",},
-	{"ADAT 18",},
+	{"AN 1",     OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
+	{"AN 2",     OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
+	{"AN 3",     OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
+	{"AN 4",     OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
+	{"AN 5",     OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
+	{"AN 6",     OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
+	{"PH 7",     OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
+	{"PH 8",     OUTPUT_HAS_REFLEVEL, .reflevel = {reflevel_output, LEN(reflevel_output)}},
+	{"SPDIF L"},
+	{"SPDIF R"},
+	{"AS 1"},
+	{"AS 2"},
+	{"ADAT 3"},
+	{"ADAT 4"},
+	{"ADAT 5"},
+	{"ADAT 6"},
+	{"ADAT 7"},
+	{"ADAT 8"},
 };
 _Static_assert(LEN(outputs) == 18, "bad outputs");
 
@@ -99,6 +100,7 @@ regtoctl(int reg, struct param *p)
 		flags = outputs[idx].flags;
 		reg += 0x1200;
 	}
+
 	// TODO: Find out the Mix Regs which will map to MIX enum
 	// Compared to FF802 (which has a 0x0100 offset for channels, too):
 	// These might be:
@@ -110,7 +112,7 @@ regtoctl(int reg, struct param *p)
 	// 0x13E1 for AN 2 → AN 2 volume
 	// 0x13E2 for AN 3 → AN 2 volume
 	// etc...
-	// after that, we should implement the logic and return MIX;
+	// after that, we should implement the logic and return MIX here;
 
 	else {
 		p->in = -1;
@@ -125,10 +127,8 @@ regtoctl(int reg, struct param *p)
 		case 0x0005: return INPUT_MSPROC;
 		case 0x0006: return INPUT_PHASE;
 		case 0x0007: return INPUT_GAIN;
-		case 0x0008:
-			return (flags & INPUT_HAS_48V) ? INPUT_48V :
-			(flags & INPUT_HAS_REFLEVEL) ? INPUT_REFLEVEL : -1;
-		case 0x0009: return INPUT_HIZ;
+		case 0x0008: return (flags & INPUT_HAS_48V) ? INPUT_48V : (flags & INPUT_HAS_REFLEVEL) ? INPUT_REFLEVEL : -1;
+		case 0x0009: return (flags & INPUT_HAS_HIZ) ? INPUT_HIZ : -1; 
 		case 0x000A: return INPUT_AUTOSET;
 
 		case 0x1200: return OUTPUT_VOLUME;
@@ -198,13 +198,19 @@ regtoctl(int reg, struct param *p)
 		case 0x3D41: return HARDWARE_OPTICALOUT;
 		case 0x3D42: return HARDWARE_SPDIFOUT;
 
+    // REFRESH seems not needed in regtoctl anymore (at least for UCXII, 802, UFXIII)
+    // see: https://github.com/michaelforney/oscmix/commit/8be1121371bcba3d4bdcb48d57d6fa651a75dd1c
+		// case 0x3F99: return REFRESH;
+
 		// TODO: Verify these (just a guess from FF802):
 		case 0x3D43: return HARDWARE_STANDALONEMIDI;
 		case 0x3D44: return HARDWARE_CCMODE;
-		// TODO: Verify these (these regs are quite important..., from FF802):
+		// TODO: Verify these (these regs are quite important)
 		case 0x3F00: return HARDWARE_DSPVERLOAD;
 		case 0x3F01: return HARDWARE_DSPSTATUS;
 		case 0x3F02: return HARDWARE_DSPAVAIL;
+    default:   	 return UNKNOWN;
+
 	}
 	return -1;
 }
@@ -236,10 +242,10 @@ ctltoreg(enum control ctl, const struct param *p)
 			reg = 0x08; goto channel;
 		case INPUT_REFLEVEL:          if (~flags & INPUT_HAS_REFLEVEL) break;
 			reg = 0x08; goto channel;
-		case INPUT_AUTOSET:           if (~flags & INPUT_HAS_AUTOSET) break;
-			reg = 0x0A; goto channel;
 		case INPUT_HIZ:               if (~flags & INPUT_HAS_HIZ) break;
 			reg = 0x09; goto channel;
+		case INPUT_AUTOSET:           if (~flags & INPUT_HAS_AUTOSET) break;
+			reg = 0x0A; goto channel;
 
 		case OUTPUT_VOLUME:           reg = 0x00; goto channel;
 		case OUTPUT_PAN:              reg = 0x01; goto channel;
@@ -276,9 +282,16 @@ ctltoreg(enum control ctl, const struct param *p)
 		case AUTOLEVEL_MAXGAIN:       reg = 0x81; goto channel;
 		case AUTOLEVEL_HEADROOM:      reg = 0x82; goto channel;
 		case AUTOLEVEL_RISETIME:      reg = 0x83; goto channel;
-			// TODO: implement MIX (see TODO in regtoctl) and MIX_LEVEL (regs >= 0x4000...) logic
+
+			// TODO implement MIX logic
 			//case MIX:
-			//case MIX_LEVEL:
+		case MIX_LEVEL:
+			if ((unsigned)p->out >= LEN(outputs)) break;
+			if ((unsigned)p->in >= LEN(inputs) + LEN(outputs)) break;
+			idx = p->in;
+			if (idx >= LEN(inputs)) idx += 0x20 - LEN(inputs);
+			return 0x4000 | p->out << 6 | idx;
+
 		case REVERB:                  return 0x3C00;
 		case REVERB_TYPE:             return 0x3C01;
 		case REVERB_PREDELAY:         return 0x3C02;
@@ -309,11 +322,10 @@ ctltoreg(enum control ctl, const struct param *p)
 		case CLOCK_WCKTERM:           return 0x3D40;
 		case HARDWARE_OPTICALOUT:     return 0x3D41;
 		case HARDWARE_SPDIFOUT:       return 0x3D42;
-
-		// TODO: Verify these (just a guess from FF802):
+		// TODO: Verify these:
 		case HARDWARE_STANDALONEMIDI: return 0x3D43;
 		case HARDWARE_CCMODE:         return 0x3D44;
-		// TODO: Verify these (these 3 regs are quite important..., guess from FF802):
+		// TODO: Verify these (these 3 regs are quite important)
 		case HARDWARE_DSPVERLOAD:     return 0x3F00;
 		case HARDWARE_DSPSTATUS:      return 0x3F01;
 		case HARDWARE_DSPAVAIL:       return 0x3F02;
@@ -323,7 +335,7 @@ ctltoreg(enum control ctl, const struct param *p)
 	}
 	return -1;
 
-	// TODO: Veriy if this works, otherwise we should move this into switch-case above
+// TODO: although it seems to work on UCX we should move this into switch-case above it seems to be less efficient in this place
 channel:
 	if (idx == -1) return -1;
 	if (idx < LEN(inputs))

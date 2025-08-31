@@ -833,6 +833,8 @@ newsamplerate(struct context *ctx, int val)
 		oscsend(ctx->addr, ",i", rate);
 }
 
+// see register in maptree (line 1483) why this is commented out...
+/*
 static void
 setregs(struct context *ctx, struct oscmsg *msg)
 {
@@ -857,7 +859,7 @@ setregs(struct context *ctx, struct oscmsg *msg)
 	}
 	oscend(msg);
 }
-
+*/
 static void
 newmeter(struct context *ctx, int val)
 {
@@ -1477,7 +1479,13 @@ static const struct node roottree[] = {
 		{NULL, DUREC_LENGTH, .new=newdureclength},
 		{0},
 	}},
-	{"register", -1, .set=setregs},
+
+	// {"register", -1, .set=setregs},	// generates stack overflow inside maptree() because node->ctl will be -1
+  // correct - michaelforney removed this in https://github.com/michaelforney/oscmix/commit/42372e8decf30ead9e4d0134b3f05c7efa7b2aad
+  // I reimplemented this to be able to set regs/vals from webui for debugging/testing purposes. 
+  // But its not really necessary -> commented out the function in (line 836) 
+
+  
 	{"refresh", REFRESH, .set=setrefresh},
 	{0},
 };
