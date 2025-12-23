@@ -310,7 +310,7 @@ jobs:
           echo "## 🚧 Nightly Build" >> $GITHUB_OUTPUT
           echo "" >> $GITHUB_OUTPUT
           echo "This is an automated nightly build from branch '${{ github.ref_name }}'." >> $GITHUB_OUTPUT
-          echo "Nightly builds are overwritten daily." >> $GITHUB_OUTPUT
+          echo "Nightly builds may be overwritten daily." >> $GITHUB_OUTPUT
           echo "" >> $GITHUB_OUTPUT
           echo "### ⚠️ Note" >> $GITHUB_OUTPUT
           echo "Features may be unstable, untested or incomplete." >> $GITHUB_OUTPUT
