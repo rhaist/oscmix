@@ -379,35 +379,44 @@ jobs:
           echo "" >> $GITHUB_OUTPUT
           echo "### Download" >> $GITHUB_OUTPUT
           echo "Pre-built binaries are available for the following platforms." >> $GITHUB_OUTPUT
-          echo "The respective oscmix-*.tar.gz package includes the follwig binaries:" >> $GITHUB_OUTPUT
+          echo "The respective oscmix-*.tar.gz package includes the following files:" >> $GITHUB_OUTPUT
           echo "" >> $GITHUB_OUTPUT
           echo "**Linux (arm64 and x86_64)**" >> $GITHUB_OUTPUT
           echo "- oscmix" >> $GITHUB_OUTPUT
           echo "- alsarawio" >> $GITHUB_OUTPUT
           echo "- alsaseqio" >> $GITHUB_OUTPUT
           echo "- regtool" >> $GITHUB_OUTPUT
-          echo "- oscmix-gtk" >> $GITHUB_OUTPUT
+          echo "- gtk/oscmix-gtk (incl. gtk/gschemas.compiled)" >> $GITHUB_OUTPUT
+          echo "- run-oscmix-gtk.sh (starts the binary above)" >> $GITHUB_OUTPUT
           echo "" >> $GITHUB_OUTPUT
           echo "**macOS (arm64 and x86_64)**" >> $GITHUB_OUTPUT
           echo "- oscmix" >> $GITHUB_OUTPUT
           echo "- coremidiio" >> $GITHUB_OUTPUT
-          echo "- regtool_generic" >> $GITHUB_OUTPUT
+          echo "- regtool" >> $GITHUB_OUTPUT
           echo "- oscmix-gtk.app" >> $GITHUB_OUTPUT
           echo "" >> $GITHUB_OUTPUT
           echo "**WEB (for own webserver)**" >> $GITHUB_OUTPUT
           echo "The pub-*.tar.gz package contains:" >> $GITHUB_OUTPUT
-          echo "- whole webdir and includes the corresponding WebAssembly (.wasm)" >> $GITHUB_OUTPUT 
+          echo "- whole webdir and includes the corresponding WebAssembly (.wasm)" >> $GITHUB_OUTPUT
           echo "" >> $GITHUB_OUTPUT
           echo "### Installation" >> $GITHUB_OUTPUT
           echo "**Linux/macOS:**" >> $GITHUB_OUTPUT
           echo "1. Download the appropriate archive for your platform" >> $GITHUB_OUTPUT
           echo "2. Extract: \`tar xzf oscmix-*.tar.gz\`" >> $GITHUB_OUTPUT
-          echo "3. Run: \`./oscmix-*/oscmix\` (CLI) or \`./oscmix-*/oscmix-gtk\` (GUI)" >> $GITHUB_OUTPUT
           echo "" >> $GITHUB_OUTPUT
           echo "**Web:**" >> $GITHUB_OUTPUT
           echo "1. Download the \`pub-*.tar.gz\` archive" >> $GITHUB_OUTPUT
-          echo "2. Extract to your web server directory" >> $GITHUB_OUTPUT
-          echo "3. Access via browser: \`http://your-server/oscmix.html\`" >> $GITHUB_OUTPUT
+          echo "2. Extract to your web server directory (ssl is required for web-midi access in browsers)" >> $GITHUB_OUTPUT
+          echo "3. Access via browser. For example: \`https://your-server/oscmix/index.html\`" >> $GITHUB_OUTPUT
+          echo "4. Note: If you want to access your unit via web-midi only, running the oscmix bin is not needed." >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo "### Running oscmix-gtk UI" >> $GITHUB_OUTPUT
+          echo "1. Run oscmix." >> $GITHUB_OUTPUT
+          echo "Refer to readme for details: https://github.com/huddx01/oscmix/tree/dev?tab=readme-ov-file#running" >> $GITHUB_OUTPUT
+          echo "2. Linux:" >> $GITHUB_OUTPUT
+          echo "Start the script \`run-oscmix-gtk.sh\` in terminal" >> $GITHUB_OUTPUT
+          echo "3. macOS:" >> $GITHUB_OUTPUT
+          echo "Start the included \`oscmix-gtk.app\`" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Delete old nightly release
