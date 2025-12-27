@@ -238,7 +238,11 @@ jobs:
           if [ "${{ matrix.platform }}" = "linux" ]; then
             cp alsarawio alsaseqio "${ARTIFACT_NAME}/" 2>/dev/null || true
             cp tools/regtool "${ARTIFACT_NAME}/" 2>/dev/null || true
-            cp gtk/oscmix-gtk "${ARTIFACT_NAME}/" 2>/dev/null || true
+            mkdir -p "${ARTIFACT_NAME}/gtk"
+            cp gtk/oscmix-gtk "${ARTIFACT_NAME}/gtk/" 2>/dev/null || true
+            cp gtk/gschemas.compiled "${ARTIFACT_NAME}/gtk/" 2>/dev/null || true
+            printf '#!/bin/sh\nDIR=$(dirname "$(readlink -f "$0")")\nGSETTINGS_SCHEMA_DIR="$DIR/gtk" "$DIR/gtk/oscmix-gtk" "$@"' > "${ARTIFACT_NAME}/run-oscmix-gtk.sh"
+            chmod +x "${ARTIFACT_NAME}/run-oscmix-gtk.sh"
           elif [ "${{ matrix.platform }}" = "macos" ]; then
             cp coremidiio "${ARTIFACT_NAME}/" 2>/dev/null || true
             cp tools/regtool_generic "${ARTIFACT_NAME}/regtool" 2>/dev/null || true
