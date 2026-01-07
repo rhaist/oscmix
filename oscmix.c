@@ -1633,7 +1633,10 @@ handleregs(uint_least32_t *payload, size_t len)
 			continue;
 		assert(ctl < LEN(nodeindex));
 		assert(nodeindex[ctl][0] != 0xFF);
-		fprintf(stderr, "handleregs verbose %.4X %.4X\n", reg, val);
+
+		if (dflag)
+			fprintf(stderr, "handleregs verbose %.4X %.4X\n", reg, val);
+
 		ctx.addrpos = addr;
 		tree = roottree;
 		for (idx = nodeindex[ctl], end = idx + sizeof nodeindex[ctl]; idx != end && *idx != 0xFF; ++idx) {
