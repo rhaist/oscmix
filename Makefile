@@ -52,7 +52,8 @@ DEVICES=\
 	device_ffucxii.o\
 	device_ffufxiii.o\
 	device_ffucx.o\
-	device_ffufxp.o
+	device_ffufxp.o\
+	device_ffufxii.o
 
 OSCMIX_OBJ=\
 	main.o\

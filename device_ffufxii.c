@@ -6,9 +6,9 @@
 #include <stdio.h>
 #define LEN(a) (sizeof (a) / sizeof *(a))
 
-static const char *const reflevel_input[] = {"+13dBu", "+19dBu"};
-static const char *const reflevel_output[] = {"+4dBu", "+13dBu", "+19dBu"};
-static const char *const reflevel_output_xlr[] = {"+4dBu", "+13dBu", "+19dBu", "+24dBu"};
+static const char *const reflevel_input[] = {"+4dBu", "Lo Gain"};
+static const char *const reflevel_output[] = {"-10dBV", "+4dBu", "Hi Gain"};
+static const char *const reflevel_output_xlr[] = {"-10dBV", "+4dBu", "Hi Gain", "+24dBu"};
 static const char *const reflevel_phones[] = {"Low", "High"};
 
 #define MIX_IN_BASE  0x4000
@@ -17,12 +17,12 @@ static const char *const reflevel_phones[] = {"Low", "High"};
 
 static const struct channelinfo inputs[] = {
 	{"Analog 1",  INPUT_HAS_GAIN | INPUT_HAS_REFLEVEL,
-		.gain={0, 120},
-		.reflevel={reflevel_input, LEN(reflevel_input)}
+			.gain={0, 120},
+			.reflevel={reflevel_input, LEN(reflevel_input)}
 	},
 	{"Analog 2",  INPUT_HAS_GAIN | INPUT_HAS_REFLEVEL,
-		.gain={0, 120},
-		.reflevel={reflevel_input, LEN(reflevel_input)}
+			.gain={0, 120},
+			.reflevel={reflevel_input, LEN(reflevel_input)}
 	},
 	{"Analog 3",  INPUT_HAS_GAIN | INPUT_HAS_REFLEVEL, .gain={0, 120}, .reflevel={reflevel_input, LEN(reflevel_input)}},
 	{"Analog 4",  INPUT_HAS_GAIN | INPUT_HAS_REFLEVEL, .gain={0, 120}, .reflevel={reflevel_input, LEN(reflevel_input)}},
@@ -31,24 +31,16 @@ static const struct channelinfo inputs[] = {
 	{"Analog 7",  INPUT_HAS_GAIN | INPUT_HAS_REFLEVEL, .gain={0, 120}, .reflevel={reflevel_input, LEN(reflevel_input)}},
 	{"Analog 8",  INPUT_HAS_GAIN | INPUT_HAS_REFLEVEL, .gain={0, 120}, .reflevel={reflevel_input, LEN(reflevel_input)}},
 	{"Mic/Inst 9",  INPUT_HAS_GAIN | INPUT_HAS_48V | INPUT_HAS_AUTOSET | INPUT_HAS_HIZ,
-		.gain={0, 750}
+			.gain={0, 750}
 	},
 	{"Mic/Inst 10", INPUT_HAS_GAIN | INPUT_HAS_48V | INPUT_HAS_AUTOSET | INPUT_HAS_HIZ, .gain={0, 750}},
 	{"Mic/Inst 11", INPUT_HAS_GAIN | INPUT_HAS_48V | INPUT_HAS_AUTOSET | INPUT_HAS_HIZ, .gain={0, 750}},
 	{"Mic/Inst 12", INPUT_HAS_GAIN | INPUT_HAS_48V | INPUT_HAS_AUTOSET | INPUT_HAS_HIZ, .gain={0, 750}},
 	{"AES L"}, {"AES R"},
 	{"ADAT 1"}, {"ADAT 2"}, {"ADAT 3"}, {"ADAT 4"}, {"ADAT 5"}, {"ADAT 6"}, {"ADAT 7"}, {"ADAT 8"},
-	{"ADAT 9"}, {"ADAT 10"}, {"ADAT 11"}, {"ADAT 12"}, {"ADAT 13"}, {"ADAT 14"}, {"ADAT 15"}, {"ADAT 16"},
-	{"MADI 1"}, {"MADI 2"}, {"MADI 3"}, {"MADI 4"}, {"MADI 5"}, {"MADI 6"}, {"MADI 7"}, {"MADI 8"},
-	{"MADI 9"}, {"MADI 10"}, {"MADI 11"}, {"MADI 12"}, {"MADI 13"}, {"MADI 14"}, {"MADI 15"}, {"MADI 16"},
-	{"MADI 17"}, {"MADI 18"}, {"MADI 19"}, {"MADI 20"}, {"MADI 21"}, {"MADI 22"}, {"MADI 23"}, {"MADI 24"},
-	{"MADI 25"}, {"MADI 26"}, {"MADI 27"}, {"MADI 28"}, {"MADI 29"}, {"MADI 30"}, {"MADI 31"}, {"MADI 32"},
-	{"MADI 33"}, {"MADI 34"}, {"MADI 35"}, {"MADI 36"}, {"MADI 37"}, {"MADI 38"}, {"MADI 39"}, {"MADI 40"},
-	{"MADI 41"}, {"MADI 42"}, {"MADI 43"}, {"MADI 44"}, {"MADI 45"}, {"MADI 46"}, {"MADI 47"}, {"MADI 48"},
-	{"MADI 49"}, {"MADI 50"}, {"MADI 51"}, {"MADI 52"}, {"MADI 53"}, {"MADI 54"}, {"MADI 55"}, {"MADI 56"},
-	{"MADI 57"}, {"MADI 58"}, {"MADI 59"}, {"MADI 60"}, {"MADI 61"}, {"MADI 62"}, {"MADI 63"}, {"MADI 64"}
+	{"ADAT 9"}, {"ADAT 10"}, {"ADAT 11"}, {"ADAT 12"}, {"ADAT 13"}, {"ADAT 14"}, {"ADAT 15"}, {"ADAT 16"}
 };
-_Static_assert(LEN(inputs) == 94, "bad inputs");
+_Static_assert(LEN(inputs) == 30, "bad inputs");
 
 static const struct channelinfo outputs[] = {
 	{"Analog 1", OUTPUT_HAS_REFLEVEL, .reflevel={reflevel_output_xlr, LEN(reflevel_output_xlr)}},
@@ -65,17 +57,9 @@ static const struct channelinfo outputs[] = {
 	{"Phones 12", OUTPUT_HAS_REFLEVEL, .reflevel={reflevel_phones, LEN(reflevel_phones)}},
 	{"AES L"}, {"AES R"},
 	{"ADAT 1"}, {"ADAT 2"}, {"ADAT 3"}, {"ADAT 4"}, {"ADAT 5"}, {"ADAT 6"}, {"ADAT 7"}, {"ADAT 8"},
-	{"ADAT 9"}, {"ADAT 10"}, {"ADAT 11"}, {"ADAT 12"}, {"ADAT 13"}, {"ADAT 14"}, {"ADAT 15"}, {"ADAT 16"},
-	{"MADI 1"}, {"MADI 2"}, {"MADI 3"}, {"MADI 4"}, {"MADI 5"}, {"MADI 6"}, {"MADI 7"}, {"MADI 8"},
-	{"MADI 9"}, {"MADI 10"}, {"MADI 11"}, {"MADI 12"}, {"MADI 13"}, {"MADI 14"}, {"MADI 15"}, {"MADI 16"},
-	{"MADI 17"}, {"MADI 18"}, {"MADI 19"}, {"MADI 20"}, {"MADI 21"}, {"MADI 22"}, {"MADI 23"}, {"MADI 24"},
-	{"MADI 25"}, {"MADI 26"}, {"MADI 27"}, {"MADI 28"}, {"MADI 29"}, {"MADI 30"}, {"MADI 31"}, {"MADI 32"},
-	{"MADI 33"}, {"MADI 34"}, {"MADI 35"}, {"MADI 36"}, {"MADI 37"}, {"MADI 38"}, {"MADI 39"}, {"MADI 40"},
-	{"MADI 41"}, {"MADI 42"}, {"MADI 43"}, {"MADI 44"}, {"MADI 45"}, {"MADI 46"}, {"MADI 47"}, {"MADI 48"},
-	{"MADI 49"}, {"MADI 50"}, {"MADI 51"}, {"MADI 52"}, {"MADI 53"}, {"MADI 54"}, {"MADI 55"}, {"MADI 56"},
-	{"MADI 57"}, {"MADI 58"}, {"MADI 59"}, {"MADI 60"}, {"MADI 61"}, {"MADI 62"}, {"MADI 63"}, {"MADI 64"}
+	{"ADAT 9"}, {"ADAT 10"}, {"ADAT 11"}, {"ADAT 12"}, {"ADAT 13"}, {"ADAT 14"}, {"ADAT 15"}, {"ADAT 16"}
 };
-_Static_assert(LEN(outputs) == 94, "bad outputs");
+_Static_assert(LEN(outputs) == 30, "bad outputs");
 
 static enum control
 regtoctl(int reg, struct param *p)
@@ -85,7 +69,7 @@ regtoctl(int reg, struct param *p)
 	if (reg < 0)
 		return -1;
 
-	if (reg < 0x2340) {
+	if (reg < 0x0B40) {
 		idx = reg / 0x30;
 		reg = reg % 0x30;
 		if (idx < LEN(inputs)) {
@@ -98,10 +82,24 @@ regtoctl(int reg, struct param *p)
 			p->out = idx;
 			flags = outputs[idx].flags;
 			if (reg < 0x0D) {
-				reg |= 0x11A0;
+				reg |= 0x05A0;
 			}
 		}
 	}
+	/* ---------- NEW MIX HANDLING ---------- */
+	// TODO: Verify if this is correct.
+	else if (reg >= 0x0B40 && reg < 0x0B40 + 0x30 * LEN(outputs)) {
+		unsigned offset = reg - 0x0B40;
+		unsigned out = offset / 0x30;
+		unsigned in  = offset % 0x30;
+		if (out < LEN(outputs) && in < LEN(inputs)) {
+			p->out = out;
+			p->in  = in;
+			return MIX;
+		}
+		return -1;
+	}
+	/* -------------------------------------- */
 	else if (reg - 0x30A0U < 0x20 * LEN(outputs)) {
 
 		unsigned base = reg - 0x30A0;
@@ -144,75 +142,62 @@ regtoctl(int reg, struct param *p)
 			default: return -1;
 		}
 	}
-	else if (reg >= 0x2340 && reg < 0x2430) {
-		idx = (reg - 0x2340) / 0x0A;
-		unsigned par = reg - (0x2340 + 0x0A * idx);
-		switch (par) {
-			case 0x0: return MIX;
-			case 0x1: return MIX;
-			case 0x2: return MIX;
-			case 0x3: return MIX;
-			case 0x4: return MIX;
-			case 0x5: return MIX;
-			default: return -1;
-		}
-	}
 	switch (reg) {
 		case 0x0000: return INPUT_MUTE;
 		case 0x0001: return INPUT_FXSEND;
 		case 0x0002: return INPUT_STEREO;
 		case 0x0003: return INPUT_RECORD;
-		case 0x0004: return UNKNOWN;
-		case 0x0005: return INPUT_PLAYCHAN;
-		case 0x0006: return UNKNOWN;
-		case 0x0007: return INPUT_MSPROC;
-		case 0x0008: return INPUT_PHASE;
-		case 0x0009: return INPUT_GAIN;
-		case 0x000A: return flags & INPUT_HAS_48V ? INPUT_48V : INPUT_REFLEVEL;
-		case 0x000B: return INPUT_HIZ;
-		case 0x000C: return INPUT_AUTOSET;
+		case 0x0004: return INPUT_PLAYCHAN;
+		// TODO: Add Width Handling in all units, device.h  and oscmix.c (INPUT_WIDTH)
+		case 0x0005: return UNKNOWN;
+		case 0x0006: return INPUT_MSPROC;
+		case 0x0007: return INPUT_PHASE;
+		case 0x0008: return INPUT_GAIN;
+		case 0x0009: return flags & INPUT_HAS_48V ? INPUT_48V : INPUT_REFLEVEL;
+		case 0x000A: return INPUT_HIZ;
+		case 0x000B: return INPUT_AUTOSET;
 
-		case 0x11A0: return OUTPUT_VOLUME;
-		case 0x11A1: return OUTPUT_PAN;
-		case 0x11A2: return OUTPUT_MUTE;
-		case 0x11A3: return OUTPUT_FXRETURN;
-		case 0x11A4: return OUTPUT_STEREO;
-		case 0x11A5: return OUTPUT_RECORD;
-		case 0x11A6: return UNKNOWN;
-		case 0x11A7: return OUTPUT_PLAYCHAN;
-		case 0x11A8: return OUTPUT_PHASE;
-		case 0x11A9: return OUTPUT_REFLEVEL;
-		case 0x11AA: return OUTPUT_CROSSFEED;
-		case 0x11AB: return OUTPUT_VOLUMECAL;
-		case 0x11AC: return UNKNOWN;
+		case 0x05A0: return OUTPUT_VOLUME;
+		case 0x05A1: return OUTPUT_PAN;
+		case 0x05A2: return OUTPUT_MUTE;
+		case 0x05A3: return OUTPUT_FXRETURN;
+		case 0x05A4: return OUTPUT_STEREO;
+		case 0x05A5: return OUTPUT_RECORD;
+		case 0x05A6: return OUTPUT_PLAYCHAN;
+		case 0x05A7: return OUTPUT_PHASE;
+		case 0x05A8: return OUTPUT_REFLEVEL;
+		case 0x05A9: return OUTPUT_CROSSFEED;
+		case 0x05AA: return UNKNOWN;
+		case 0x05AB: return OUTPUT_VOLUMECAL;
 
-		case 0x000D: return LOWCUT;
-		case 0x000E: return LOWCUT_FREQ;
-		case 0x000F: return LOWCUT_SLOPE;
-		case 0x0010: return EQ;
-		case 0x0011: return EQ_BAND1TYPE;
-		case 0x0012: return EQ_BAND1GAIN;
-		case 0x0013: return EQ_BAND1FREQ;
-		case 0x0014: return EQ_BAND1Q;
-		case 0x0015: return EQ_BAND2GAIN;
-		case 0x0016: return EQ_BAND2FREQ;
-		case 0x0017: return EQ_BAND2Q;
-		case 0x0018: return EQ_BAND3TYPE;
-		case 0x0019: return EQ_BAND3GAIN;
-		case 0x001A: return EQ_BAND3FREQ;
-		case 0x001B: return EQ_BAND3Q;
-		case 0x001C: return DYNAMICS;
-		case 0x001D: return DYNAMICS_GAIN;
-		case 0x001E: return DYNAMICS_ATTACK;
-		case 0x001F: return DYNAMICS_RELEASE;
-		case 0x0020: return DYNAMICS_COMPTHRES;
-		case 0x0021: return DYNAMICS_COMPRATIO;
-		case 0x0022: return DYNAMICS_EXPTHRES;
-		case 0x0023: return DYNAMICS_EXPRATIO;
-		case 0x0024: return AUTOLEVEL;
-		case 0x0025: return AUTOLEVEL_MAXGAIN;
-		case 0x0026: return AUTOLEVEL_HEADROOM;
-		case 0x0027: return AUTOLEVEL_RISETIME;
+
+		case 0x000C: return LOWCUT;
+		case 0x000D: return LOWCUT_FREQ;
+		case 0x000E: return LOWCUT_SLOPE;
+		case 0x000F: return EQ;
+		case 0x0010: return EQ_BAND1TYPE;
+		case 0x0011: return EQ_BAND1GAIN;
+		case 0x0012: return EQ_BAND1FREQ;
+		case 0x0013: return EQ_BAND1Q;
+		case 0x0014: return EQ_BAND2GAIN;
+		case 0x0015: return EQ_BAND2FREQ;
+		case 0x0016: return EQ_BAND2Q;
+		case 0x0017: return EQ_BAND3TYPE;
+		case 0x0018: return EQ_BAND3GAIN;
+		case 0x0019: return EQ_BAND3FREQ;
+		case 0x001A: return EQ_BAND3Q;
+		case 0x001B: return DYNAMICS;
+		case 0x001C: return DYNAMICS_GAIN;
+		case 0x001D: return DYNAMICS_ATTACK;
+		case 0x001E: return DYNAMICS_RELEASE;
+		case 0x001F: return DYNAMICS_COMPTHRES;
+		case 0x0020: return DYNAMICS_COMPRATIO;
+		case 0x0021: return DYNAMICS_EXPTHRES;
+		case 0x0022: return DYNAMICS_EXPRATIO;
+		case 0x0023: return AUTOLEVEL;
+		case 0x0024: return AUTOLEVEL_MAXGAIN;
+		case 0x0025: return AUTOLEVEL_HEADROOM;
+		case 0x0026: return AUTOLEVEL_RISETIME;
 
 		case 0x3000: return REVERB;
 		case 0x3001: return REVERB_TYPE;
@@ -240,7 +225,6 @@ regtoctl(int reg, struct param *p)
 		case 0x3050: return CTLROOM_MAINOUT;
 		case 0x3051: return CTLROOM_MAINMONO;
 		case 0x3052: return CTLROOM_MUTEENABLE;
-
 		case 0x3053: return CTLROOM_DIMREDUCTION;
 		case 0x3054: return CTLROOM_DIM;
 		case 0x3055: return CTLROOM_RECALLVOLUME;
@@ -252,27 +236,25 @@ regtoctl(int reg, struct param *p)
 		case 0x3068: return UNKNOWN;
 
 		case 0x3078: return HARDWARE_AESIN;
-
 		case 0x307A: return HARDWARE_SPDIFOUT;
 		case 0x307C: return HARDWARE_INTERFACEMODE;
-		case 0x307D: return HARDWARE_CCROUTING;
-		case 0x307E: return HARDWARE_STANDALONEMIDI;
-		case 0x307F: return HARDWARE_STANDALONEARC;
+		case 0x307D: return HARDWARE_STANDALONEMIDI;
+		case 0x307E: return HARDWARE_STANDALONEARC;
+		case 0x307F: return HARDWARE_LCDCONTRAST;
+
+
+		// TODO: Verify if this is coorrect. Just my guess for now.
 		case 0x3080: return HARDWARE_LOCKKEYS;
 		case 0x3081: return HARDWARE_REMAPKEYS;
 		case 0x3082: return HARDWARE_PROGRAMKEY01;
 		case 0x3083: return HARDWARE_PROGRAMKEY02;
 		case 0x3084: return HARDWARE_PROGRAMKEY03;
 		case 0x3085: return HARDWARE_PROGRAMKEY04;
-		case 0x3086: return HARDWARE_LCDCONTRAST;
+		//case 0x3086: return HARDWARE_LCDCONTRAST;
 
 		case 0x3087: return HARDWARE_OPTICALOUT;
 		case 0x3088: return HARDWARE_OPTICALOUT2;
 
-		case 0x308C: return HARDWARE_MADIINPUT;
-		case 0x308D: return HARDWARE_MADIOUTPUT;
-		case 0x308E: return HARDWARE_MADIFRAME;
-		case 0x308F: return HARDWARE_MADIFORMAT;
 		case 0x3200: return HARDWARE_DSPVERLOAD;
 		case 0x3201: return HARDWARE_DSPAVAIL;
 		case 0x3202: return HARDWARE_DSPSTATUS;
@@ -298,6 +280,11 @@ regtoctl(int reg, struct param *p)
 		case 0x358F: return DUREC_INFO;
 		case 0x3590: return DUREC_LENGTH;
 		case 0x3E02: return SETUP_ARCLEDS;
+
+		// TODO: Verify if these registers exist and what they do.
+		//case 0x3D43: return HARDWARE_STANDALONEMIDI;
+		//case 0x3D44: return HARDWARE_CCMODE;
+		//case 0x3D45: return HARDWARE_STANDALONEARC;
 	}
 	return -1;
 }
@@ -309,74 +296,77 @@ static int ctltoreg(enum control ctl, const struct param *p)
 		idx = p->in;
 	} else if ((unsigned)p->out < LEN(outputs)) {
 		flags = outputs[p->out].flags;
-		idx = 94 + p->out;
+		idx = 30 + p->out;
 	}
 	switch (ctl) {
 		case INPUT_MUTE:        reg = 0x00; goto channel;
 		case INPUT_FXSEND:      reg = 0x01; goto channel;
 		case INPUT_STEREO:      reg = 0x02; goto channel;
 		case INPUT_RECORD:      reg = 0x03; goto channel;
-		case INPUT_PLAYCHAN:    reg = 0x05; goto channel;
-		case INPUT_MSPROC:      reg = 0x07; goto channel;
-		case INPUT_PHASE:       reg = 0x08; goto channel;
+		case INPUT_PLAYCHAN:    reg = 0x04; goto channel;
+		// TODO: Add Width Handling in all units, device.h  and oscmix.c (INPUT_WIDTH)
+		//case INPUT_WIDTH:       reg = 0x05; goto channel;
+		case INPUT_MSPROC:      reg = 0x06; goto channel;
+		case INPUT_PHASE:       reg = 0x07; goto channel;
 		case INPUT_GAIN:        if (!(flags & INPUT_HAS_GAIN)) break;
-		reg = 0x09; goto channel;
+			reg = 0x08; goto channel;
 		case INPUT_REFLEVEL:    if (!(flags & INPUT_HAS_REFLEVEL)) break;
-		reg = 0x0A; goto channel;
+			reg = 0x09; goto channel;
 		case INPUT_48V:         if (!(flags & INPUT_HAS_48V)) break;
-		reg = 0x0A; goto channel;
+			reg = 0x09; goto channel;
 		case INPUT_HIZ:         if (!(flags & INPUT_HAS_HIZ)) break;
-		reg = 0x0B; goto channel;
+			reg = 0x0A; goto channel;
 		case INPUT_AUTOSET:        if (!(flags & INPUT_HAS_AUTOSET)) break;
-		reg = 0x0C; goto channel;
+			reg = 0x0B; goto channel;
 		case OUTPUT_VOLUME:      reg = 0x00; goto channel;
 		case OUTPUT_PAN:         reg = 0x01; goto channel;
 		case OUTPUT_MUTE:        reg = 0x02; goto channel;
 		case OUTPUT_FXRETURN:    reg = 0x03; goto channel;
 		case OUTPUT_STEREO:      reg = 0x04; goto channel;
 		case OUTPUT_RECORD:      reg = 0x05; goto channel;
-		case OUTPUT_PLAYCHAN:    reg = 0x07; goto channel;
-		case OUTPUT_PHASE:       reg = 0x08; goto channel;
+		case OUTPUT_PLAYCHAN:    reg = 0x06; goto channel;
+		case OUTPUT_PHASE:       reg = 0x07; goto channel;
 		case OUTPUT_REFLEVEL:    if (!(flags & OUTPUT_HAS_REFLEVEL)) break;
-		reg = 0x09; goto channel;
-		case OUTPUT_CROSSFEED:   reg = 0x0A; goto channel;
+			reg = 0x08; goto channel;
+		case OUTPUT_CROSSFEED:   reg = 0x09; goto channel;
+		// register 0x0A is unknown. Maybe sth with roomeq?
 		case OUTPUT_VOLUMECAL:   reg = 0x0B; goto channel;
-		case LOWCUT:             reg = 0x0D; goto channel;
-		case LOWCUT_FREQ:        reg = 0x0E; goto channel;
-		case LOWCUT_SLOPE:       reg = 0x0F; goto channel;
-		case EQ:                 reg = 0x10; goto channel;
-		case EQ_BAND1TYPE:       reg = 0x11; goto channel;
-		case EQ_BAND1GAIN:       reg = 0x12; goto channel;
-		case EQ_BAND1FREQ:       reg = 0x13; goto channel;
-		case EQ_BAND1Q:          reg = 0x14; goto channel;
-		case EQ_BAND2GAIN:       reg = 0x15; goto channel;
-		case EQ_BAND2FREQ:       reg = 0x16; goto channel;
-		case EQ_BAND2Q:          reg = 0x17; goto channel;
-		case EQ_BAND3TYPE:       reg = 0x18; goto channel;
-		case EQ_BAND3GAIN:       reg = 0x19; goto channel;
-		case EQ_BAND3FREQ:       reg = 0x1A; goto channel;
-		case EQ_BAND3Q:          reg = 0x1B; goto channel;
-		case DYNAMICS:           reg = 0x1C; goto channel;
-		case DYNAMICS_GAIN:      reg = 0x1D; goto channel;
-		case DYNAMICS_ATTACK:    reg = 0x1E; goto channel;
-		case DYNAMICS_RELEASE:   reg = 0x1F; goto channel;
-		case DYNAMICS_COMPTHRES: reg = 0x20; goto channel;
-		case DYNAMICS_COMPRATIO: reg = 0x21; goto channel;
-		case DYNAMICS_EXPTHRES:  reg = 0x22; goto channel;
-		case DYNAMICS_EXPRATIO:  reg = 0x23; goto channel;
-		case AUTOLEVEL:          reg = 0x24; goto channel;
-		case AUTOLEVEL_MAXGAIN:  reg = 0x25; goto channel;
-		case AUTOLEVEL_HEADROOM: reg = 0x26; goto channel;
-		case AUTOLEVEL_RISETIME: reg = 0x27; goto channel;
-		channel:                      if (idx == -1) break;
-		return idx * 0x30 | reg;
+		case LOWCUT:             reg = 0x0C; goto channel;
+		case LOWCUT_FREQ:        reg = 0x0D; goto channel;
+		case LOWCUT_SLOPE:       reg = 0x0E; goto channel;
+		case EQ:                 reg = 0x0F; goto channel;
+		case EQ_BAND1TYPE:       reg = 0x10; goto channel;
+		case EQ_BAND1GAIN:       reg = 0x11; goto channel;
+		case EQ_BAND1FREQ:       reg = 0x12; goto channel;
+		case EQ_BAND1Q:          reg = 0x13; goto channel;
+		case EQ_BAND2GAIN:       reg = 0x14; goto channel;
+		case EQ_BAND2FREQ:       reg = 0x15; goto channel;
+		case EQ_BAND2Q:          reg = 0x16; goto channel;
+		case EQ_BAND3TYPE:       reg = 0x17; goto channel;
+		case EQ_BAND3GAIN:       reg = 0x18; goto channel;
+		case EQ_BAND3FREQ:       reg = 0x19; goto channel;
+		case EQ_BAND3Q:          reg = 0x1A; goto channel;
+		case DYNAMICS:           reg = 0x1B; goto channel;
+		case DYNAMICS_GAIN:      reg = 0x1C; goto channel;
+		case DYNAMICS_ATTACK:    reg = 0x1D; goto channel;
+		case DYNAMICS_RELEASE:   reg = 0x1E; goto channel;
+		case DYNAMICS_COMPTHRES: reg = 0x1F; goto channel;
+		case DYNAMICS_COMPRATIO: reg = 0x20; goto channel;
+		case DYNAMICS_EXPTHRES:  reg = 0x21; goto channel;
+		case DYNAMICS_EXPRATIO:  reg = 0x22; goto channel;
+		case AUTOLEVEL:          reg = 0x23; goto channel;
+		case AUTOLEVEL_MAXGAIN:  reg = 0x24; goto channel;
+		case AUTOLEVEL_HEADROOM: reg = 0x25; goto channel;
+		case AUTOLEVEL_RISETIME: reg = 0x26; goto channel;
+			channel:                      if (idx == -1) break;
+			return idx * 0x30 | reg;
 		case NAME:
 			if (idx == -1) break;
 			return 0x2800 + (idx << 3);
 		case MIX:
 			if ((unsigned)p->out >= LEN(outputs)) break;
 			if ((unsigned)p->in >= LEN(inputs)) break;
-			return 0x2340 + p->out * 0x30 + p->in;
+			return 0x0B40 + p->out * 0x30 + p->in;
 		case MIX_LEVEL: {
 			if ((unsigned)p->out >= LEN(outputs)) break;
 			if ((unsigned)p->in >= LEN(inputs) + LEN(outputs)) break;
@@ -427,9 +417,10 @@ static int ctltoreg(enum control ctl, const struct param *p)
 
 
 		case HARDWARE_INTERFACEMODE:  return 0x307C;
-		case HARDWARE_CCROUTING:      return 0x307D;
-		case HARDWARE_STANDALONEMIDI: return 0x307E;
-		case HARDWARE_STANDALONEARC:  return 0x307F;
+		//case HARDWARE_CCROUTING:      return 0x307B;
+		case HARDWARE_STANDALONEMIDI: return 0x307D;
+		case HARDWARE_STANDALONEARC:  return 0x307E;
+		case HARDWARE_LCDCONTRAST:    return 0x307F;
 
 		case HARDWARE_LOCKKEYS:       return 0x3080;
 		case HARDWARE_REMAPKEYS:      return 0x3081;
@@ -437,15 +428,11 @@ static int ctltoreg(enum control ctl, const struct param *p)
 		case HARDWARE_PROGRAMKEY02:   return 0x3083;
 		case HARDWARE_PROGRAMKEY03:   return 0x3084;
 		case HARDWARE_PROGRAMKEY04:   return 0x3085;
-		case HARDWARE_LCDCONTRAST:    return 0x3086;
+
 
 		case HARDWARE_OPTICALOUT:     return 0x3087;
 		case HARDWARE_OPTICALOUT2:    return 0x3088;
 
-		case HARDWARE_MADIINPUT:      return 0x308C;
-		case HARDWARE_MADIOUTPUT:     return 0x308D;
-		case HARDWARE_MADIFRAME:      return 0x308E;
-		case HARDWARE_MADIFORMAT:     return 0x308F;
 
 		case HARDWARE_DSPVERLOAD:     return 0x3200;
 		case HARDWARE_DSPAVAIL:       return 0x3201;
@@ -486,8 +473,8 @@ static int ctltoreg(enum control ctl, const struct param *p)
 		case ROOMEQ_BAND9FREQ:        reg = 0x30BE; goto roomeq;
 		case ROOMEQ_BAND9Q:           reg = 0x30BF; goto roomeq;
 		roomeq:
-		if (p->out == -1) break;
-		return reg + (p->out << 5);
+			if (p->out == -1) break;
+			return reg + (p->out << 5);
 		case SETUP_ARCLEDS:           return 0x3E02;
 		case REFRESH:                 return 0x3E03;
 		case SETUP_STORE:             return 0x3E06;
@@ -501,16 +488,17 @@ static int ctltoreg(enum control ctl, const struct param *p)
 	return -1;
 }
 
-const struct device ffufxp = {
-	.id = "ffufxp",
-	.name = "Fireface UFX+",
-	.version = 24,
+
+const struct device ffufxii = {
+	.id = "ffufxii",
+	.name = "Fireface UFX II",
+	.version = 01,
 	.flags = DEVICE_HAS_DUREC | DEVICE_HAS_ROOMEQ,
 	.inputs = inputs,
 	.inputslen = LEN(inputs),
 	.outputs = outputs,
 	.outputslen = LEN(outputs),
-	.refresh = 0x234A, // 0x67CD,
+	.refresh = 0x67CD,
 	.regtoctl = regtoctl,
 	.ctltoreg = ctltoreg,
 };

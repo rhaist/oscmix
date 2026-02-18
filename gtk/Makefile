@@ -26,7 +26,8 @@ OBJ=\
     ../device_ffucxii.o\
     ../device_ffufxiii.o\
     ../device_ffucx.o\
-    ../device_ffufxp.o
+    ../device_ffufxp.o\
+    ../device_ffufxii.o
 
 RES=\
 	oscmix.ui\
