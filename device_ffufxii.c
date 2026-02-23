@@ -86,10 +86,10 @@ regtoctl(int reg, struct param *p)
 			}
 		}
 	}
-	/*
-	else if (reg - 0x30A0U < 0x20 * LEN(outputs)) {
 
-		unsigned base = reg - 0x30A0;
+	else if (reg - 0x3426U < 0x20 * LEN(outputs)) {
+
+		unsigned base = reg - 0x3426;
 		p->out = base >> 5;
 		unsigned subreg = base & 0x1F;
 
@@ -129,7 +129,7 @@ regtoctl(int reg, struct param *p)
 			default: return -1;
 		}
 	}
-	*/
+
 	else if (reg >= 0x0B40 && reg < 0x0C1C) {
 		idx = (reg - 0x0B40) / 0x0A;
 		unsigned par = reg - (0x0B40 + 0x0A * idx);
@@ -441,43 +441,41 @@ static int ctltoreg(enum control ctl, const struct param *p)
 		case HARDWARE_ARCDELTA:       return 0x3203;
 		case HARDWARE_ARCBUTTONS:     return 0x3204;
 
-		/*
-		case ROOMEQ_DELAY:            reg = 0x30A0; goto roomeq;
-		case ROOMEQ:                  reg = 0x30A1; goto roomeq;
-		case ROOMEQ_BAND1TYPE:        reg = 0x30A2; goto roomeq;
-		case ROOMEQ_BAND1GAIN:        reg = 0x30A3; goto roomeq;
-		case ROOMEQ_BAND1FREQ:        reg = 0x30A4; goto roomeq;
-		case ROOMEQ_BAND1Q:           reg = 0x30A5; goto roomeq;
-		case ROOMEQ_BAND2GAIN:        reg = 0x30A6; goto roomeq;
-		case ROOMEQ_BAND2FREQ:        reg = 0x30A7; goto roomeq;
-		case ROOMEQ_BAND2Q:           reg = 0x30A8; goto roomeq;
-		case ROOMEQ_BAND3GAIN:        reg = 0x30A9; goto roomeq;
-		case ROOMEQ_BAND3FREQ:        reg = 0x30AA; goto roomeq;
-		case ROOMEQ_BAND3Q:           reg = 0x30AB; goto roomeq;
-		case ROOMEQ_BAND4GAIN:        reg = 0x30AC; goto roomeq;
-		case ROOMEQ_BAND4FREQ:        reg = 0x30AD; goto roomeq;
-		case ROOMEQ_BAND4Q:           reg = 0x30AE; goto roomeq;
-		case ROOMEQ_BAND5GAIN:        reg = 0x30AF; goto roomeq;
-		case ROOMEQ_BAND5FREQ:        reg = 0x30B0; goto roomeq;
-		case ROOMEQ_BAND5Q:           reg = 0x30B1; goto roomeq;
-		case ROOMEQ_BAND6GAIN:        reg = 0x30B2; goto roomeq;
-		case ROOMEQ_BAND6FREQ:        reg = 0x30B3; goto roomeq;
-		case ROOMEQ_BAND6Q:           reg = 0x30B4; goto roomeq;
-		case ROOMEQ_BAND7GAIN:        reg = 0x30B5; goto roomeq;
-		case ROOMEQ_BAND7FREQ:        reg = 0x30B6; goto roomeq;
-		case ROOMEQ_BAND7Q:           reg = 0x30B7; goto roomeq;
-		case ROOMEQ_BAND8TYPE:        reg = 0x30B8; goto roomeq;
-		case ROOMEQ_BAND8GAIN:        reg = 0x30B9; goto roomeq;
-		case ROOMEQ_BAND8FREQ:        reg = 0x30BA; goto roomeq;
-		case ROOMEQ_BAND8Q:           reg = 0x30BB; goto roomeq;
-		case ROOMEQ_BAND9TYPE:        reg = 0x30BC; goto roomeq;
-		case ROOMEQ_BAND9GAIN:        reg = 0x30BD; goto roomeq;
-		case ROOMEQ_BAND9FREQ:        reg = 0x30BE; goto roomeq;
-		case ROOMEQ_BAND9Q:           reg = 0x30BF; goto roomeq;
+		case ROOMEQ_DELAY:            reg = 0x3426; goto roomeq;
+		case ROOMEQ:                  reg = 0x3427; goto roomeq;
+		case ROOMEQ_BAND1TYPE:        reg = 0x3428; goto roomeq;
+		case ROOMEQ_BAND1GAIN:        reg = 0x3429; goto roomeq;
+		case ROOMEQ_BAND1FREQ:        reg = 0x342A; goto roomeq;
+		case ROOMEQ_BAND1Q:           reg = 0x342B; goto roomeq;
+		case ROOMEQ_BAND2GAIN:        reg = 0x342C; goto roomeq;
+		case ROOMEQ_BAND2FREQ:        reg = 0x342D; goto roomeq;
+		case ROOMEQ_BAND2Q:           reg = 0x342E; goto roomeq;
+		case ROOMEQ_BAND3GAIN:        reg = 0x342F; goto roomeq;
+		case ROOMEQ_BAND3FREQ:        reg = 0x3430; goto roomeq;
+		case ROOMEQ_BAND3Q:           reg = 0x3431; goto roomeq;
+		case ROOMEQ_BAND4GAIN:        reg = 0x3432; goto roomeq;
+		case ROOMEQ_BAND4FREQ:        reg = 0x3433; goto roomeq;
+		case ROOMEQ_BAND4Q:           reg = 0x3434; goto roomeq;
+		case ROOMEQ_BAND5GAIN:        reg = 0x3435; goto roomeq;
+		case ROOMEQ_BAND5FREQ:        reg = 0x3436; goto roomeq;
+		case ROOMEQ_BAND5Q:           reg = 0x3437; goto roomeq;
+		case ROOMEQ_BAND6GAIN:        reg = 0x3438; goto roomeq;
+		case ROOMEQ_BAND6FREQ:        reg = 0x3439; goto roomeq;
+		case ROOMEQ_BAND6Q:           reg = 0x343A; goto roomeq;
+		case ROOMEQ_BAND7GAIN:        reg = 0x343B; goto roomeq;
+		case ROOMEQ_BAND7FREQ:        reg = 0x343C; goto roomeq;
+		case ROOMEQ_BAND7Q:           reg = 0x343D; goto roomeq;
+		case ROOMEQ_BAND8TYPE:        reg = 0x343E; goto roomeq;
+		case ROOMEQ_BAND8GAIN:        reg = 0x343F; goto roomeq;
+		case ROOMEQ_BAND8FREQ:        reg = 0x3440; goto roomeq;
+		case ROOMEQ_BAND8Q:           reg = 0x3441; goto roomeq;
+		case ROOMEQ_BAND9TYPE:        reg = 0x3442; goto roomeq;
+		case ROOMEQ_BAND9GAIN:        reg = 0x3443; goto roomeq;
+		case ROOMEQ_BAND9FREQ:        reg = 0x3444; goto roomeq;
+		case ROOMEQ_BAND9Q:           reg = 0x3445; goto roomeq;
 		roomeq:
 			if (p->out == -1) break;
 			return reg + (p->out << 5);
-		*/
 		case SETUP_ARCLEDS:           return 0x3E02;
 		case REFRESH:                 return 0x3E03;
 		case SETUP_STORE:             return 0x3E06;
