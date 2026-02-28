@@ -295,7 +295,7 @@ regtoctl(int reg, struct param *p)
 }
 static int ctltoreg(enum control ctl, const struct param *p)
 {
-	int reg, reg_out, idx = -1, flags = 0;
+	int reg, idx = -1, flags = 0;
 	if ((unsigned)p->in < LEN(inputs)) {
 		flags = inputs[p->in].flags;
 		idx = p->in;
