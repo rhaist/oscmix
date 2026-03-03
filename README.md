@@ -211,7 +211,7 @@ Note: you can also set MIDIPORT env variable to 'Fireface 802 (12345678) Port 2'
 The [gtk](gtk) directory contains oscmix-gtk, a GTK frontend that
 communicates with oscmix using OSC.
 
-<img width="1847" height="1073" alt="gtk" src="https://github.com/user-attachments/assets/58fcf6dc-6342-42e0-8d7c-7e351599b573" />
+<img width="1847" height="1073" alt="gtk" src="doc/gtk.png" />
 
 ### Running GTK UI
 To run oscmix-gtk without installing, set the `GSETTINGS_SCHEMA_DIR`
