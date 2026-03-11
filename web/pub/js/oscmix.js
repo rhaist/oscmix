@@ -1270,13 +1270,15 @@ function setupInterface() {
 				if (event.target.value != "MIDI") return;
 
 				const detectDevice = (portName) => {
-					return devices.find((device) => {
-						if (!portName) return false;
-						return (
-							portName.startsWith(device.deviceName) &&
-							device.midiPortNames.some((port) => portName.includes(port))
-						);
-					});
+					if (!portName) return undefined;
+					// Prefer an exact port-suffix match first.
+					const exact = devices.find((device) =>
+											   portName.startsWith(device.deviceName) &&
+											   device.midiPortNames.some((port) => portName.includes(port))
+											   );
+					if (exact) return exact;
+					// Fallback
+					return devices.find((device) => portName.startsWith(device.deviceName));
 				};
 
 				const updateCurrentDevice = () => {
@@ -1299,14 +1301,19 @@ function setupInterface() {
 					[midiPorts.input, access.inputs],
 					[midiPorts.output, access.outputs]
 				]) {
-					let prev;
+					let lastMatchedOption = null;
+					let lastMatchedId = null;
 					for (const port of ports.values()) {
 						const option = new Option(port.name, port.id);
 						select.add(option);
-						if (!select.dataset.id && detectDevice(port.name)) {
-							option.selected = true;
-							select.dataset.id = port.id;
+						if (detectDevice(port.name)) {
+							lastMatchedOption = option;
+							lastMatchedId = port.id;
 						}
+					}
+					if (lastMatchedOption && !select.dataset.id) {
+						lastMatchedOption.selected = true;
+						select.dataset.id = lastMatchedId;
 					}
 					select.disabled = false;
 					select.addEventListener("change", updateCurrentDevice);
