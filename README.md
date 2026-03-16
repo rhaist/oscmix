@@ -37,7 +37,7 @@ pacman -S base-devel alsa-lib gtk3 clang lld wasi-libc
 ## Usage
 
 ```
-oscmix [-dlm] [-r recvaddr] [-s recvaddr]
+oscmix [-dlm] [-r recvaddr] [-s sendaddr]
 ```
 
 oscmix reads and writes MIDI SysEx messages from/to file descriptors
