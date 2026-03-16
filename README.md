@@ -54,26 +54,24 @@ See the manual, [oscmix.1], for more information.
 
 ### Linux
 
-On Linux systems, you can use bundled `alsarawio` program open and
-configure a given raw MIDI subdevice and set up these file descriptors
-appropriately.
+On Linux, oscmix will automatically find and connect to a supported
+device:
 
-To determine your MIDI device, look for it in the output of `amidi -l`
-(the one ending in `,1` with the name `Fireface UCX II`).
+```sh
+oscmix
+```
 
-For example:
+If auto-detection fails or you have multiple devices, you can specify
+the device explicitly using the bundled `alsarawio` helper. Pass the
+card, device, and subdevice numbers from `amidi -l` (the port ending
+in `,1`):
 
 ```sh
 alsarawio 2,0,1 oscmix
 ```
 
-There is also a tool `alsaseqio` that requires alsa-lib and uses
-the sequencer API.
-
-To determine the client and port for your device, find it (port 1
-of the Fireface UCX II) in the output of `aconnect -l`.
-
-For example:
+There is also `alsaseqio` which uses the ALSA sequencer API. Pass the
+client and port from `aconnect -l`:
 
 ```sh
 alsaseqio 24:1 oscmix

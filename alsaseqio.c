@@ -1,5 +1,6 @@
 #define _POSIX_C_SOURCE 200809L
 #include <stdlib.h>
+#include <string.h>
 #include <fcntl.h>
 #include <poll.h>
 #include <pthread.h>
@@ -15,8 +16,36 @@ static snd_midi_event_t *dev;
 static void
 usage(void)
 {
-	fprintf(stderr, "usage: alsaseq client:port cmd [arg...]\n");
+	fprintf(stderr, "usage: alsaseqio [client:port] cmd [arg...]\n");
 	exit(1);
+}
+
+static int
+findclient(snd_seq_t *seq, snd_seq_addr_t *dest)
+{
+	static const char *const devices[] = {"Fireface UCX II", NULL};
+	snd_seq_client_info_t *cinfo;
+	const char *name;
+	int i, err = -1;
+
+	if (snd_seq_client_info_malloc(&cinfo) < 0)
+		return -1;
+	snd_seq_client_info_set_client(cinfo, -1);
+	while (snd_seq_query_next_client(seq, cinfo) >= 0) {
+		name = snd_seq_client_info_get_name(cinfo);
+		for (i = 0; devices[i]; ++i) {
+			if (strncmp(name, devices[i], strlen(devices[i])) == 0) {
+				dest->client = snd_seq_client_info_get_client(cinfo);
+				dest->port = 1;
+				err = 0;
+				goto done;
+			}
+		}
+	}
+	fprintf(stderr, "alsaseqio: no supported device found\n");
+done:
+	snd_seq_client_info_free(cinfo);
+	return err;
 }
 
 static void *
@@ -78,20 +107,27 @@ main(int argc, char *argv[])
 		usage();
 	} ARGEND
 
-	if (argc < 2)
-		usage();
-
-	dest.client = strtol(argv[0], &end, 10);
-	if (*end != ':')
-		usage();
-	dest.port = strtol(end + 1, &end, 10);
-	if (*end)
+	if (argc < 1)
 		usage();
 
 	err = snd_seq_open(&seq, "default", SND_SEQ_OPEN_DUPLEX, 0);
 	if (err) {
 		fprintf(stderr, "snd_seq_open: %s\n", snd_strerror(err));
 		return 1;
+	}
+
+	if (!strchr(argv[0], ':')) {
+		if (findclient(seq, &dest) != 0)
+			return 1;
+	} else {
+		dest.client = strtol(argv[0], &end, 10);
+		if (*end != ':')
+			usage();
+		dest.port = strtol(end + 1, &end, 10);
+		if (*end)
+			usage();
+		++argv;
+		--argc;
 	}
 	err = snd_seq_set_client_name(seq, "alsaseq");
 	if (err) {
@@ -169,8 +205,8 @@ main(int argc, char *argv[])
 			perror("dup2");
 			return 1;
 		}
-		execvp(argv[1], argv + 1);
-		fprintf(stderr, "execvp %s: %s\n", argv[1], strerror(errno));
+		execvp(argv[0], argv);
+		fprintf(stderr, "execvp %s: %s\n", argv[0], strerror(errno));
 		return 1;
 	}
 

@@ -12,8 +12,38 @@
 static void
 usage(void)
 {
-	fprintf(stderr, "usage: alsarawio cmd [arg...]\n");
+	fprintf(stderr, "usage: alsarawio [card[,dev[,subdev]]] cmd [arg...]\n");
 	exit(1);
+}
+
+static int
+finddev(int *cardp, int *devp, int *subdevp)
+{
+	static const char *const devices[] = {"Fireface UCX II", NULL};
+	int card, ctlfd, i;
+	char path[64];
+	struct snd_ctl_card_info info;
+
+	for (card = 0; card <= 31; ++card) {
+		snprintf(path, sizeof path, "/dev/snd/controlC%d", card);
+		ctlfd = open(path, O_RDONLY | O_CLOEXEC);
+		if (ctlfd < 0)
+			continue;
+		if (ioctl(ctlfd, SNDRV_CTL_IOCTL_CARD_INFO, &info) == 0) {
+			for (i = 0; devices[i]; ++i) {
+				if (strncmp((char *)info.name, devices[i], strlen(devices[i])) == 0) {
+					close(ctlfd);
+					*cardp = card;
+					*devp = 0;
+					*subdevp = 1;
+					return 0;
+				}
+			}
+		}
+		close(ctlfd);
+	}
+	fprintf(stderr, "alsarawio: no supported device found\n");
+	return -1;
 }
 
 int
@@ -29,28 +59,35 @@ main(int argc, char *argv[])
 	default:
 		usage();
 	} ARGEND
-	if (argc < 2)
+	if (argc < 1)
 		usage();
-	arg = argv[0];
-	val = strtol(arg, &end, 10);
-	if (val < 0 || val > INT_MAX || !*arg || (*end && *end != ','))
-		usage();
-	card = val;
-	dev = 0;
-	subdev = 0;
-	if (*end == ',') {
-		arg = end + 1;
+	if (!(*argv[0] >= '0' && *argv[0] <= '9')) {
+		if (finddev(&card, &dev, &subdev) != 0)
+			return 1;
+	} else {
+		arg = argv[0];
 		val = strtol(arg, &end, 10);
 		if (val < 0 || val > INT_MAX || !*arg || (*end && *end != ','))
 			usage();
-		dev = val;
+		card = val;
+		dev = 0;
+		subdev = 0;
 		if (*end == ',') {
 			arg = end + 1;
 			val = strtol(arg, &end, 10);
-			if (val < 0 || val > INT_MAX || !*arg || *end)
+			if (val < 0 || val > INT_MAX || !*arg || (*end && *end != ','))
 				usage();
-			subdev = val;
+			dev = val;
+			if (*end == ',') {
+				arg = end + 1;
+				val = strtol(arg, &end, 10);
+				if (val < 0 || val > INT_MAX || !*arg || *end)
+					usage();
+				subdev = val;
+			}
 		}
+		++argv;
+		--argc;
 	}
 
 	snprintf(path, sizeof path, "/dev/snd/controlC%d", card);
@@ -108,7 +145,7 @@ main(int argc, char *argv[])
 		perror("dup2");
 		return 1;
 	}
-	execvp(argv[1], argv + 1);
+	execvp(argv[0], argv);
 	perror("execvp");
 	return 1;
 }

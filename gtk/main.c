@@ -663,6 +663,13 @@ main(int argc, char *argv[])
 {
 	GtkApplication *app;
 	int ret;
+	char *bindir;
+
+	if (!g_getenv("GSETTINGS_SCHEMA_DIR")) {
+		bindir = g_path_get_dirname(argv[0]);
+		g_setenv("GSETTINGS_SCHEMA_DIR", bindir, FALSE);
+		g_free(bindir);
+	}
 
 	app = gtk_application_new(NULL,
 #if GLIB_CHECK_VERSION(2, 74, 0)
