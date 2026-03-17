@@ -199,4 +199,3 @@ Volume argument may be `N` (nil) to update pan only without changing volume.
 | Method | Arguments | Description |
 | --- | --- | --- |
 | `/refresh` | none | **W** Refresh all device registers |
-| `/register` | `ii...` register, value | **W** Set device register explicitly |
