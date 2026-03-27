@@ -496,10 +496,14 @@ jobs:
             ./artifacts/**/*.sha256
             ./artifacts/**/*.AppImage
             ./artifacts/**/*.dmg
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  create-nightly-release:
     runs-on: ubuntu-latest
     needs: [version-info, build]
     if: needs.version-info.outputs.is_tag == 'false'
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -617,5 +621,6 @@ jobs:
             ./artifacts/**/*.tar.gz
             ./artifacts/**/*.sha256
             ./artifacts/**/*.AppImage
+            ./artifacts/**/*.dmg
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
