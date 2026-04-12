@@ -82,7 +82,10 @@ regtoctl(int reg, struct param *p)
 
 	if (reg < 0)
 		return -1;
-
+	/* Debug: Print all registers in the NAME range (0x2800-0x2BFF) */
+//	if ( reg >= 0x2800 && reg < 0x2C00) {
+//		fprintf(stderr, "DEBUG regtoctl: NAME range register 0x%04X detected\n", reg);
+//	}
 	if (reg < 0x2340) {
 		idx = reg / 0x30;
 		reg = reg % 0x30;
@@ -141,6 +144,7 @@ regtoctl(int reg, struct param *p)
 		}
 	}
 	else if (reg >= 0x2340 && reg < 0x26EC) {
+		//fprintf(stderr, "DEBUG regtoctl: MIX range register 0x%04X detected\n", reg);
 		idx = (reg - 0x2340) / 0x0A;
 		unsigned par = reg - (0x2340 + 0x0A * idx);
 		switch (par) {
@@ -153,6 +157,7 @@ regtoctl(int reg, struct param *p)
 			default: return -1;
 		}
 	}
+
 	switch (reg) {
 		case 0x0000: return INPUT_MUTE;
 		case 0x0001: return INPUT_FXSEND;
@@ -495,7 +500,7 @@ const struct device ffufxiii = {
 	.id = "ffufxiii",
 	.name = "Fireface UFX III",
 	.version = 25,
-	.flags = DEVICE_HAS_DUREC | DEVICE_HAS_ROOMEQ,
+	.flags = DEVICE_HAS_DUREC | DEVICE_HAS_ROOMEQ | DEVICE_MIXER_V2,
 	.inputs = inputs,
 	.inputslen = LEN(inputs),
 	.outputs = outputs,

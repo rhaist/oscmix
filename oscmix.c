@@ -274,20 +274,75 @@ setmixlevel(const struct input *in, const struct output *out, float level)
 	reg = device->ctltoreg(MIX_LEVEL, &p);
 	if (reg == -1)
 		return;
-	val = lroundf(level * 0x8000);
-	assert(val >= 0);
-	assert(val <= 0x10000);
-	if (val > 0x4000)
-		val = (val >> 3) - 0x8000;
 
-	if (dflag)
-		fprintf(stderr, "setmixlevel in=%d out=%d reg=0x%X val=0x%lX (level=%.3f)\n",
-				p.in, p.out, reg, val, level);
+	if (device->flags & DEVICE_MIXER_V2) {
+		/* UFX* mixer format:
+		 * bits[0-13]: 14-bit signed 1/10 dB (0 = 0 dB, negative = attenuation, -3000 = mute)
+		 * bit[14]:    parameter (0 = volume)
+		 * bit[15]:    channel  (0 = left/odd output, 1 = right/even output) */
+		int val_bits, channel_bit;
+		float db;
+
+		channel_bit = (p.out % 2) ? 0x8000 : 0x0000;
+
+		if (level <= 0.0f) {
+			val_bits = (-3000) & 0x3FFF;  /* mute sentinel: -300.0 dB in 14-bit signed */
+			db = -300.0f;
+		} else {
+			db = 20.0f * log10f(level);
+			val_bits = (int)lroundf(db * 10.0f) & 0x3FFF;  /* signed: 0 at 0 dB, negative for attenuation */
+		}
+
+		val = channel_bit | val_bits;
+
+		if (dflag)
+			fprintf(stderr, "setmixlevel [V2] in=%d out=%d reg=0x%04X"
+					" ch=%s db=%.1f val_bits=0x%03X full=0x%04lX\n",
+					p.in, p.out, reg,
+					channel_bit ? "R" : "L",
+					db, val_bits, val);
+	} else {
+		/* UCX II / FF802 format: signed linear amplitude */
+		val = lroundf(level * 0x8000);
+		assert(val >= 0);
+		assert(val <= 0x10000);
+		if (val > 0x4000)
+			val = (val >> 3) - 0x8000;
+
+		if (dflag)
+			fprintf(stderr, "setmixlevel [V1] in=%d out=%d reg=0x%X val=0x%lX (level=%.3f)\n",
+					p.in, p.out, reg, val, level);
+	}
 
 	setreg(reg, val);
 }
 
+static void
+setmixpan(const struct input *in, const struct output *out, int pan)
+{
+	int reg;
+	long val;
+	struct param p;
 
+	if (!(device->flags & DEVICE_MIXER_V2))
+		return;
+
+	p.in = in - inputs;
+	p.out = out - outputs;
+	reg = device->ctltoreg(MIX_LEVEL, &p);
+	if (reg == -1)
+		return;
+
+	/* pan register: bit14=1 (parameter=pan), bits[7:0] = pan as 8-bit two's complement
+	 * R100=100=0x64, center=0, L100=-100=0x9C */
+	val = 0x4000 | (pan & 0xFF);
+
+	if (dflag)
+		fprintf(stderr, "setmixpan [V2] in=%d out=%d reg=0x%04X pan=%d val=0x%04lX\n",
+				p.in, p.out, reg, pan, val);
+
+	setreg(reg, val);
+}
 
 static void
 setchannel(struct context *ctx, struct oscmsg *msg)
@@ -351,10 +406,20 @@ muteinput(struct input *in, bool mute)
 		in[1].mute = mute;
 	for (out = outputs; out != outputs + device->outputslen; ++out) {
 		mix = &out->mix[in - inputs];
-		if (mix[0] > 0)
-			setmixlevel(in, out, mute ? 0 : mix[0]);
-		if (in->stereo && mix[1] > 0)
-			setmixlevel(in + 1, out, mute ? 0 : mix[1]);
+		if (!in->stereo && (device->flags & DEVICE_MIXER_V2) && out->stereo) {
+			/* V2 mono-in stereo-out: restore full volume (not pre-panned) to both L/R.
+			 * Snap to L output to get both ll and lr from the stereo pair cache. */
+			const struct output *out_l = out - ((out - outputs) & 1);
+			float ll = out_l[0].mix[in - inputs];
+			float lr = out_l[1].mix[in - inputs];
+			float full_vol = sqrtf(ll * ll + lr * lr);
+			setmixlevel(in, out, mute ? 0.f : full_vol);
+		} else {
+			if (mix[0] > 0)
+				setmixlevel(in, out, mute ? 0 : mix[0]);
+			if (in->stereo && mix[1] > 0)
+				setmixlevel(in + 1, out, mute ? 0 : mix[1]);
+		}
 	}
 }
 
@@ -626,7 +691,6 @@ setdb(const struct output *out, const struct input *in, float db)
 
 
 
-
 static void
 setpan(const struct output *out, const struct input *in, int pan)
 {
@@ -636,9 +700,18 @@ setpan(const struct output *out, const struct input *in, int pan)
 	p.in = in - inputs;
 	p.out = out - outputs;
 	reg = device->ctltoreg(MIX, &p);
-	if (reg == -1)
+	if (reg == -1) {
+		if (dflag)
+			fprintf(stderr, "setpan in=%d out=%d pan=%d -> no MIX reg\n",
+					p.in, p.out, pan);
 		return;
+	}
 	val = (pan & 0x7fff) | 0x8000;
+
+	if (dflag)
+		fprintf(stderr, "setpan in=%d out=%d reg=0x%04X pan=%d val=0x%04X\n",
+				p.in, p.out, reg, pan, (unsigned)val & 0xffff);
+
 	setreg(reg, val);
 }
 
@@ -740,9 +813,19 @@ setlevel(struct output *out, const struct input *in, bool instereo, const struct
 		}
 		mix[0][0] = ll;
 		mix[1][0] = lr;
-		if (!in->mute) {
-			setmixlevel(in, out, ll);
-			setmixlevel(in, out + 1, lr);
+		if (!instereo && (device->flags & DEVICE_MIXER_V2)) {
+			/* V2 mono-in stereo-out: write full volume to both L/R, pan via hardware register.
+			 * Cache still holds cosine-panned ll/lr so calclevel can reconstruct vol/pan. */
+			if (!in->mute) {
+				setmixlevel(in, out, l->vol);
+				setmixlevel(in, out + 1, l->vol);
+			}
+			setmixpan(in, out, l->pan);
+		} else {
+			if (!in->mute) {
+				setmixlevel(in, out, ll);
+				setmixlevel(in, out + 1, lr);
+			}
 		}
 	} else {
 		if (instereo) {
@@ -1706,6 +1789,15 @@ oscsend(const char *addr, const char *type, ...)
 	assert(type[0] == ',');
 
 	if (!oscmsg.buf) {
+		oscmsg.buf = oscbuf;
+		oscmsg.end = oscbuf + sizeof oscbuf;
+		oscmsg.type = NULL;
+		oscputstr(&oscmsg, "#bundle");
+		oscputint(&oscmsg, 0);
+		oscputint(&oscmsg, 1);
+	} else if (oscmsg.buf + 512 > oscmsg.end) {
+		/* Buffer nearly full: flush current bundle and start a new one */
+		oscflush();
 		oscmsg.buf = oscbuf;
 		oscmsg.end = oscbuf + sizeof oscbuf;
 		oscmsg.type = NULL;

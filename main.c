@@ -46,7 +46,6 @@ usage(int status)
 	fprintf(stderr, "  coremidiio -f 6,7 -p 2 oscmix\n");
 	fprintf(stderr, "  coremidiio -f 6,7 -p 2 oscmix -m -z\n");
 	fprintf(stderr, "  MIDIPORT='Fireface 802 (12345678) Port 2' coremidiio -f 6,7 oscmix -m -z\n");
-	fprintf(stderr, "  coremidiio -f 6,7 -p 20 oscmix -p 'Fireface 802 (12345678) Port 2' -z -m8223\n");
 	exit(status);
 }
 
@@ -178,7 +177,7 @@ main(int argc, char *argv[])
 			--argc;
 		}
 		snprintf(mcastbuf, sizeof mcastbuf, "udp!224.0.0.1!%.10s",
-				 mport ? mport : "8222");
+			mport ? mport : "8222");
 		sendaddr = mcastbuf;
 		mflag = 1;
 		break;
@@ -214,11 +213,16 @@ main(int argc, char *argv[])
 
 	if (fcntl(6, F_GETFD) < 0 || fcntl(7, F_GETFD) < 0) {
 		fprintf(stderr, "error: MIDI file descriptors 6 and 7 are not open.\n"
-				"       Use alsarawio, alsaseqio (Linux) or coremidiio (macOS)\n"
-				"       to set up MIDI I/O before invoking oscmix.\n\n");
+		                "       Use alsarawio, alsaseqio (Linux) or coremidiio (macOS)\n"
+		                "       to set up MIDI I/O before invoking oscmix.\n\n");
 		usage(1);
 	}
 
+	/* Ignore SIGPIPE so that failed writes (e.g. to a multicast socket
+	 * with no active listeners) return EPIPE instead of killing the process. */
+	signal(SIGPIPE, SIG_IGN);
+
+	/* Parse ports before sockopen() modifies the address strings in-place. */
 	uint16_t recvport = sockaddrport(recvaddr);
 	uint16_t sendport = sockaddrport(sendaddr);
 
